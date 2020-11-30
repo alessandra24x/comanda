@@ -1,0 +1,40 @@
+version: "3.7"
+
+volumes:
+  logs:
+    driver: local
+  mariadb:
+
+services:
+  slim:
+    build: ./
+    working_dir: /var/www
+    command: php -S 0.0.0.0:8080 -t public
+    environment:
+      docker: "true"
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/var/www
+      - logs:/var/www/logs
+
+  db:
+    image: mariadb:latest
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=slim
+      - MYSQL_DATABASE=slim
+      - MYSQL_USER=slim
+      - MYSQL_PASSWORD=slim
+    volumes:
+      - mariadb:/var/lib/mysql
+    ports:
+      - 5001:3306
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 5002:80
+    environment:
+      - PMA_HOST=db
