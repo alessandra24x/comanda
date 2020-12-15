@@ -103,16 +103,16 @@ abstract class Action
      */
     protected function respondWithData($data = null, int $statusCode = 200): Response
     {
-        $payload = new ActionPayload($statusCode, $data);
+        $payload = new Payload($statusCode, $data);
 
         return $this->respond($payload);
     }
 
     /**
-     * @param ActionPayload $payload
+     * @param Payload $payload
      * @return Response
      */
-    protected function respond(ActionPayload $payload): Response
+    protected function respond(Payload $payload): Response
     {
         $json = json_encode($payload, JSON_PRETTY_PRINT);
         $this->response->getBody()->write($json);

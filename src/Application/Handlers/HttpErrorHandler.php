@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Handlers;
 
 use App\Application\Actions\ActionError;
-use App\Application\Actions\ActionPayload;
+use App\Application\Actions\Payload;
 use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
@@ -60,7 +60,7 @@ class HttpErrorHandler extends SlimErrorHandler
             $error->trace = $exception->getTraceAsString();
         }
 
-        $payload = new ActionPayload($statusCode, null, $error);
+        $payload = new Payload($statusCode, null, $error);
         $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT);
 
         $response = $this->responseFactory->createResponse($statusCode);

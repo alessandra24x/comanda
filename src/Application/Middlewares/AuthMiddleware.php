@@ -1,53 +1,54 @@
 <?php
 
-namespace App\Middlewares;
+namespace App\Application\Middlewares;
 
-use App\Application\Models\Usuario;
+use _HumbugBoxf99c1794c57d\Nette\Neon\Exception;
+use App\Application\Controllers\Controller;
+use App\Application\Models\Empleado;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response;
-use App\Helpers\JwtHelper;
+use App\Application\Helpers\JwtHelper;
 
-class AuthMiddleware
+class AuthMiddleware extends Controller
 {
 
-    public function __construct($tipo)
+    /**
+     * @var mixed|null
+     */
+    private $sector;
+
+    public function __construct($sector = null)
     {
-        $this->tipo = $tipo;
+        $this->sector = $sector;
     }
 
     public function __invoke(Request $request, RequestHandler $handler)
     {
         $token = $request->getHeaderLine('token');
-        //$payload = null;
         try {
             $payload = JwtHelper::validatorJWT($token);
         } catch (\Exception $e) {
             $response = new Response();
-            $response->withStatus(401);
-            return $response;
+            $response->getBody()->write("se te olvido pasar el token");
+            return $response->withStatus(400);
         }
 
-        $user = Usuario::firstWhere('email', $payload->email);
+        $user = Empleado::firstWhere('nombre', $payload->nombre);
         //        $response = new Response();
         //        $response->getBody()->write(json_encode($payload->tipo));
         //        return $response;
-        $valido = ($user && $this->tipo === $user->tipo);
+        
+        $valido = ($user && $this->sector === $user->Sector);
 
         if (!$valido) {
-
             $response = new Response();
-            $response->getBody()->write('Prohibido pasar');
-            // throw new \Slim\Exception\HttpForbiddenException( $request );
-            return $response->withStatus(403);
-        } else { // Este else está medio al pelo
-
-            $response = $handler->handle($request);
-            $existingContent = (string) $response->getBody();
-            $resp = new Response();
-            $resp->getBody()->write($existingContent);
-
-            return $resp;
+            return $this->respondWithData($response, 'Datos invalidos. Asegurese de tener los permisos necesarios', 403);
         }
+
+        $response = $handler->handle($request);
+
+        return $response;
+
     }
 }

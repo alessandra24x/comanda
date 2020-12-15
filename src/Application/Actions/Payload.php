@@ -5,7 +5,7 @@ namespace App\Application\Actions;
 
 use JsonSerializable;
 
-class ActionPayload implements JsonSerializable
+class Payload implements JsonSerializable
 {
     /**
      * @var int

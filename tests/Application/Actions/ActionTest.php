@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Application\Actions;
 
 use App\Application\Actions\Action;
-use App\Application\Actions\ActionPayload;
+use App\Application\Actions\Payload;
 use DateTimeImmutable;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
@@ -28,7 +28,7 @@ class ActionTest extends TestCase
             public function action() :Response
             {
                 return $this->respond(
-                    new ActionPayload(
+                    new Payload(
                         202,
                         [
                             'willBeDoneAt' => (new DateTimeImmutable())->format(DateTimeImmutable::ATOM)
